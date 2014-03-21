@@ -28,6 +28,13 @@ int setting_pce_fast_adpcmvolume = 100;
 int setting_pce_fast_cdpsgvolume = 100;
 uint32_t setting_pce_fast_cdspeed = 1;
 uint32_t setting_pce_keepaspect = 1;
+#elif defined(WANT_PCE_FULL_EMU)
+int setting_pce_full_nospritelimit = 0;
+int setting_pce_full_cddavolume = 100;
+int setting_pce_full_adpcmvolume = 100;
+int setting_pce_full_cdpsgvolume = 100;
+uint32_t setting_pce_full_cdspeed = 1;
+uint32_t setting_pce_full_keepaspect = 1;
 #elif defined(WANT_PSX_EMU)
 uint32_t setting_psx_multitap_port_1 = 0;
 uint32_t setting_psx_multitap_port_2 = 0;
@@ -69,6 +76,21 @@ uint64 MDFN_GetSettingUI(const char *name)
    if (!strcmp("pce_fast.slstart", name))
       return 4;
    if (!strcmp("pce_fast.slend", name))
+      return 235;
+#elif defined(WANT_PCE_FULL_EMU)
+   if (!strcmp("pce.cddavolume", name))
+      return setting_pce_full_cddavolume;
+   if (!strcmp("pce.adpcmvolume", name))
+      return setting_pce_full_adpcmvolume;
+   if (!strcmp("pce.cdpsgvolume", name))
+      return setting_pce_full_cdpsgvolume;
+   if (!strcmp("pce.cdspeed", name))
+      return setting_pce_full_cdspeed;
+   if (!strcmp("pce.ocmultiplier", name)) /* make configurable */
+      return 1;
+   if (!strcmp("pce.slstart", name))
+      return 4;
+   if (!strcmp("pce.slend", name))
       return 235;
 #elif defined(WANT_WSWAN_EMU)
    if (!strcmp("wswan.ocmultiplier", name))
@@ -163,6 +185,23 @@ bool MDFN_GetSettingB(const char *name)
       return 0;
    if (!strcmp("pce_fast.correct_aspect", name))
       return setting_pce_keepaspect;
+#elif defined(WANT_PCE_FULL_EMU)
+   if (!strcmp("pce.input.multitap", name))
+      return 1;
+   if (!strcmp("pce.arcadecard", name))
+      return 1;
+   if (!strcmp("pce.forcesgx", name))
+      return 0;
+   if (!strcmp("pce.nospritelimit", name))
+      return setting_pce_full_nospritelimit;
+   if (!strcmp("pce.forcemono", name))
+      return 0;
+   if (!strcmp("pce.disable_softreset", name))
+      return 0;
+   if (!strcmp("pce.adpcmlp", name))
+      return 0;
+   if (!strcmp("pce.correct_aspect", name))
+      return setting_pce_full_keepaspect;
 #elif defined(WANT_PSX_EMU)
    if (!strcmp("psx.input.port1.memcard", name))
       return 1;
@@ -224,6 +263,9 @@ std::string MDFN_GetSettingS(const char *name)
       return std::string("gba_bios.bin");
 #elif defined(WANT_PCE_FAST_EMU)
    if (!strcmp("pce_fast.cdbios", name))
+      return std::string("syscard3.pce");
+#elif defined(WANT_PCE_FULL_EMU)
+   if (!strcmp("pce.cdbios", name))
       return std::string("syscard3.pce");
 #elif defined(WANT_PSX_EMU)
    if (!strcmp("psx.bios_eu", name))

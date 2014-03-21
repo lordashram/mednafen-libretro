@@ -92,6 +92,46 @@ HW_SOUND_SOURCES += $(MEDNAFEN_DIR)/hw_sound/pce_psg/pce_psg.cpp
 HW_VIDEO_SOURCES += $(MEDNAFEN_DIR)/hw_video/huc6270/vdc_video.cpp
 CDROM_SOURCES += $(MEDNAFEN_DIR)/cdrom/pcecd.cpp
 OKIADPCM_SOURCES += $(MEDNAFEN_DIR)/okiadpcm.cpp
+
+
+else ifeq ($(core), pce-full)
+   core = pce_full
+ifneq ($(platform), osx)
+   PTHREAD_FLAGS = -pthread
+endif
+   NEED_BPP = 32
+   NEED_TREMOR = 1
+   NEED_BLIP = 1
+   NEED_CD = 1
+   NEED_STEREO_SOUND = 1
+   NEED_SCSI_CD = 1
+   NEED_THREADING = 1
+   NEED_CRC32 = 1
+   CORE_DEFINE := -DWANT_PCE_FULL_EMU
+   CORE_DIR := $(MEDNAFEN_DIR)/pce
+
+CORE_SOURCES := $(CORE_DIR)/vce.cpp \
+	$(CORE_DIR)/input.cpp \
+	$(CORE_DIR)/input/gamepad.cpp \
+	$(CORE_DIR)/input/mouse.cpp \
+	$(CORE_DIR)/input/tsushinkb.cpp \
+	$(CORE_DIR)/huc.cpp \
+	$(CORE_DIR)/tsushin.cpp \
+	$(CORE_DIR)/subhw.cpp \
+	$(CORE_DIR)/mcgenjin.cpp \
+	$(CORE_DIR)/pce.cpp
+TARGET_NAME := mednafen_pce_full_libretro
+
+HW_CPU_SOURCES += $(MEDNAFEN_DIR)/hw_cpu/huc6280/cpu_huc6280.cpp
+HW_CPU_SOURCES_C +=   $(MEDNAFEN_DIR)/hw_cpu/c68k/c68k.c \
+  $(MEDNAFEN_DIR)/hw_cpu/c68k/c68kexec.c
+HW_MISC_SOURCES += $(MEDNAFEN_DIR)/hw_misc/arcade_card/arcade_card.cpp
+HW_SOUND_SOURCES += $(MEDNAFEN_DIR)/hw_sound/pce_psg/pce_psg.cpp
+HW_VIDEO_SOURCES += $(MEDNAFEN_DIR)/hw_video/huc6270/vdc_video.cpp
+CDROM_SOURCES += $(MEDNAFEN_DIR)/cdrom/pcecd.cpp
+OKIADPCM_SOURCES += $(MEDNAFEN_DIR)/okiadpcm.cpp
+
+
 else ifeq ($(core), lynx)
    core = lynx
    NEED_BPP = 32
@@ -528,10 +568,11 @@ LIBRETRO_SOURCES := libretro.cpp stubs.cpp $(THREAD_STUBS)
 TRIO_SOURCES += $(MEDNAFEN_DIR)/trio/trio.c \
 	$(MEDNAFEN_DIR)/trio/triostr.c
 
-SOURCES_C := 	$(TREMOR_SRC) $(LIBRETRO_SOURCES_C) $(TRIO_SOURCES)
+SOURCES_C := 	$(TREMOR_SRC) $(LIBRETRO_SOURCES_C) $(TRIO_SOURCES) $(HW_CPU_SOURCES_C)
 
 SOURCES := $(LIBRETRO_SOURCES) $(CORE_SOURCES) $(MEDNAFEN_SOURCES) $(HW_CPU_SOURCES) $(HW_MISC_SOURCES) $(HW_SOUND_SOURCES) $(HW_VIDEO_SOURCES)
 
+ifdef build_dv
 WARNINGS := -Wall \
 	-Wno-sign-compare \
 	-Wno-unused-variable \
@@ -539,6 +580,7 @@ WARNINGS := -Wall \
 	-Wno-uninitialized \
 	$(NEW_GCC_WARNING_FLAGS) \
 	-Wno-strict-aliasing
+endif
 
 EXTRA_GCC_FLAGS := -funroll-loops
 
@@ -560,7 +602,7 @@ endif
 
 LDFLAGS += $(fpic) $(SHARED)
 FLAGS += $(fpic) $(NEW_GCC_FLAGS)
-FLAGS += -I. -Imednafen -Imednafen/include -Imednafen/intl -Imednafen/hw_misc -Imednafen/hw_sound -Imednafen/hw_cpu $(CORE_INCDIR) $(EXTRA_CORE_INCDIR)
+FLAGS += -I. -Imednafen -Imednafen/include -Imednafen/intl -Imednafen/hw_misc -Imednafen/hw_sound -Imednafen/hw_cpu -Imednafen/hw_video $(CORE_INCDIR) $(EXTRA_CORE_INCDIR)
 
 FLAGS += $(ENDIANNESS_DEFINES) -DSIZEOF_DOUBLE=8 $(WARNINGS) -DMEDNAFEN_VERSION=\"0.9.31\" -DPACKAGE=\"mednafen\" -DMEDNAFEN_VERSION_NUMERIC=931 -DPSS_STYLE=1 -DMPC_FIXED_POINT $(CORE_DEFINE) -DSTDC_HEADERS -D__STDC_LIMIT_MACROS -D__LIBRETRO__ -DNDEBUG -D_LOW_ACCURACY_ $(EXTRA_INCLUDES) $(SOUND_DEFINE) -Dgettext_noop\(a\)=a
 

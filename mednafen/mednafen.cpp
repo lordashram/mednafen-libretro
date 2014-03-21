@@ -58,9 +58,9 @@ extern MDFNGI EmulatedGB;
 #elif defined WANT_GBA_EMU
 extern MDFNGI EmulatedGBA;
 #define MDFNGI_CORE &EmulatedGBA
-#elif defined WANT_PCE_EMU
-extern MDFNGI EmulatedPCE;
-#define MDFNGI_CORE &EmulatedPCE
+#elif defined WANT_PCE_FULL_EMU
+extern MDFNGI EmulatedPCE_Full;
+#define MDFNGI_CORE &EmulatedPCE_Full
 #elif defined WANT_PCE_FAST_EMU
 extern MDFNGI EmulatedPCE_Fast;
 #define MDFNGI_CORE &EmulatedPCE_Fast
